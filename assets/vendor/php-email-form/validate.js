@@ -90,7 +90,12 @@ jQuery(document).ready(function($) {
       }
     });
     if (ferror) return false;
-    else var str = $(this).serialize();
+
+    // Label every email so it's clear it came from the MITS website
+    var userSubject = $.trim($(this).find('input[name="subject"]').val());
+    $(this).find('input[name="_subject"]').val('[MITS website] ' + (userSubject || 'New contact message'));
+
+    var str = $(this).serialize();
 
     var this_form = $(this);
     var action = $(this).attr('action');
@@ -105,19 +110,29 @@ jQuery(document).ready(function($) {
     this_form.find('.error-message').slideUp();
     this_form.find('.loading').slideDown();
     
+    // Submit to Formspree (GitHub Pages can't run the original PHP script)
     $.ajax({
       type: "POST",
       url: action,
       data: str,
-      success: function(msg) {
-        if (msg == 'OK') {
-          this_form.find('.loading').slideUp();
+      dataType: "json",
+      headers: { Accept: "application/json" },
+      success: function(res) {
+        this_form.find('.loading').slideUp();
+        if (res && res.ok) {
           this_form.find('.sent-message').slideDown();
-          this_form.find("input:not(input[type=submit]), textarea").val('');
+          this_form.find("input:not([type=submit]):not([type=hidden]), textarea").val('');
         } else {
-          this_form.find('.loading').slideUp();
-          this_form.find('.error-message').slideDown().html(msg);
+          this_form.find('.error-message').slideDown().text('Sorry, your message could not be sent. Please try again.');
         }
+      },
+      error: function(xhr) {
+        var msg = 'Sorry, your message could not be sent. Please try again.';
+        if (xhr.responseJSON && xhr.responseJSON.errors) {
+          msg = xhr.responseJSON.errors.map(function(e) { return e.message; }).join(' ');
+        }
+        this_form.find('.loading').slideUp();
+        this_form.find('.error-message').slideDown().text(msg);
       }
     });
     return false;

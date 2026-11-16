@@ -31,7 +31,7 @@ body {
 	padding: 25px;
 }
 .parallax{
-	background: url("../../../../Documents/ITD210 Rieger/AdobeStock_316523254.jpeg");
+	background: url("../img/AdobeStock_316523254.jpeg");
 	background-size:auto;
 	background-attachment: fixed;
 	height: 500px;

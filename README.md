@@ -238,7 +238,7 @@ Working-tree size went from about 73 MB to 24 MB.
 
 2400px wide is still sharper than most screens show. The HTML didn't need to change because the file name stayed the same.
 
-### 4. Fixed two broken file paths
+### 4. Fixed three broken file references
 
 **Why:** Both pointed to files that don't exist, so the browser got errors instead of images.
 
@@ -264,6 +264,16 @@ Working-tree size went from about 73 MB to 24 MB.
 .parallax {
   background: url("../img/AdobeStock_316523254.jpeg");
 }
+```
+
+**Missing animate.css import**, `assets/css/style.css`. The stylesheet tried to import `animate.css` from `assets/css/`, but that file was never there, so every page load logged a 404 and the import did nothing. Removing the line changes nothing visually and clears the error:
+
+```css
+/* Before (line 8) */
+@import url('animate.css');
+
+/* After */
+/* (line removed) */
 ```
 
 ### 5. Fixed typos and the ZIP code in page text
